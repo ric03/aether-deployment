@@ -1,4 +1,35 @@
-### Raspberry Pi Setup
+# Aether deployment
+
+This will install the following:
+
+- Mosquitto
+- Telegraf
+- InfluxDB
+- Grafana
+
+Mosquitto acts as the MQTT-Broker. Telegraf connects to the Broker and writes the data into the InfluxDB. At the end
+Grafana visualizes the data from the InfluxDB.
+
+## Getting started
+
+1. Enter and encode the passwords for Mosquitto
+   ```shell
+   $ ./encode-mosquitto-passwd.sh
+   ```
+2. Enter and configure secrets
+   ```shell
+   $ ./configure-secrets.sh
+   ```
+3. Apply terraform
+   ```shell
+   $ terraform apply -var-file config/secrets.tfvars
+   ```
+4. Destroy terraform
+   ```shell
+   $ terraform destroy -var-file config/secrets.tfvars
+   ```
+
+## Raspberry Pi Setup
 
 Raspberry Pi 4 Model B (arm64, 8 GB RAM)
 
