@@ -7,16 +7,31 @@ terraform {
   }
 }
 
-provider "docker" {}
+provider "docker" {
+  host = "unix:///var/run/docker.sock"
+}
 
 resource "docker_image" "mosquitto" {
-  name         = "eclipse-mosquitto:2.0.12"
+  name         = "eclipse-mosquitto:2.0"
+  keep_locally = var.keep_images_locally
+}
+resource "docker_image" "telegraf" {
+  name         = "telegraf:1.20"
+  keep_locally = var.keep_images_locally
+}
+resource "docker_image" "influxdb" {
+  name         = "influxdb:2.0"
+  keep_locally = var.keep_images_locally
+}
+resource "docker_image" "grafana" {
+  name         = "grafana/grafana:8.2.2"
   keep_locally = var.keep_images_locally
 }
 
 resource "docker_container" "mosquitto" {
-  image = docker_image.mosquitto.latest
-  name  = "mosquitto"
+  depends_on = [docker_network.mosquitto]
+  image      = docker_image.mosquitto.latest
+  name       = "mosquitto"
   ports {
     # TLS/SSL
     internal = 8883
@@ -30,36 +45,84 @@ resource "docker_container" "mosquitto" {
   volumes {
     container_path = "/mosquitto/config/mosquitto.conf"
     host_path      = abspath("config/mosquitto.conf")
-    read_only      = true
   }
   volumes {
     container_path = "/mosquitto/config/mosquitto.passwd"
     host_path      = abspath("config/mosquitto.passwd")
-    read_only      = true
   }
-}
-
-
-resource "docker_image" "telegraf" {
-  name         = "telegraf:1.19.3"
-  keep_locally = var.keep_images_locally
+  networks_advanced {
+    name = docker_network.mosquitto.name
+  }
 }
 
 resource "docker_container" "telegraf" {
-  image = docker_image.telegraf.latest
-  name  = "telegraf"
-  env = [
+  depends_on = [docker_network.influxdb, docker_network.mosquitto]
+  image      = docker_image.telegraf.latest
+  name       = "telegraf"
+  env        = [
     "INFLUXDB_ACCESS_TOKEN=${var.influxdb_access_token}",
-    "MQTT_TELEGRAF_PASSWORD=${var.mqtt_broker_telegraf_password}"
+    "MQTT_BROKER_TELEGRAF_PASSWORD=${var.mqtt_broker_telegraf_password}"
   ]
-  ports {
-    internal = 8883
-    external = 8883
-  }
   volumes {
     container_path = "/etc/telegraf/telegraf.conf"
     host_path      = abspath("config/telegraf.conf")
     read_only      = true
   }
+  networks_advanced {
+    name = docker_network.influxdb.name
+  }
+  networks_advanced {
+    name = docker_network.mosquitto.name
+  }
 }
-# TODO test if env is loaded correctly and if volumes are mounted correctly
+
+resource "docker_container" "influxdb" {
+  depends_on = [docker_network.influxdb]
+  image      = docker_image.influxdb.latest
+  name       = "influxdb"
+  env        = [
+    "DOCKER_INFLUXDB_INIT_MODE=setup",
+    "DOCKER_INFLUXDB_INIT_USERNAME=home",
+    "DOCKER_INFLUXDB_INIT_PASSWORD=${var.influxdb_password}",
+    "DOCKER_INFLUXDB_INIT_ORG=home",
+    "DOCKER_INFLUXDB_INIT_BUCKET=sensor-data",
+    "DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${var.influxdb_access_token}"
+  ]
+  ports {
+    internal = 8086
+    external = 8086
+  }
+  networks_advanced {
+    name = docker_network.influxdb.name
+  }
+}
+
+resource "docker_container" "grafana" {
+  image = docker_image.grafana.latest
+  name  = "grafana"
+  env   = [
+    "INFLUXDB_USERNAME=home",
+    "INFLUXDB_ACCESS_TOKEN=${var.influxdb_access_token}",
+    "GF_SECURITY_ADMIN_PASSWORD=${var.grafana_password}"
+  ]
+  ports {
+    internal = 3000
+    external = 3000
+  }
+  volumes {
+    container_path = "/etc/grafana/provisioning/datasources/influxdb.yml"
+    host_path      = abspath("config/grafana_influxdb_datasource.yml")
+    read_only      = true
+  }
+  networks_advanced {
+    name = docker_network.influxdb.name
+  }
+}
+
+resource "docker_network" "mosquitto" {
+  name = "mosquitto"
+}
+
+resource "docker_network" "influxdb" {
+  name = "influx"
+}
