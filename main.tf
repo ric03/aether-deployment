@@ -92,9 +92,17 @@ resource "docker_container" "influxdb" {
     internal = 8086
     external = 8086
   }
+  volumes {
+    volume_name    = docker_volume.influxdb2-data.name
+    container_path = "/var/lib/influxdb2"
+  }
   networks_advanced {
     name = docker_network.influxdb.name
   }
+}
+
+resource "docker_volume" "influxdb2-data" {
+  name = "influxdb2-data"
 }
 
 resource "docker_container" "grafana" {
