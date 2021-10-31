@@ -35,9 +35,8 @@ Raspberry Pi 4 Model B (arm64, 8 GB RAM)
 
 1. Flash the SD-Card with Ubuntu Server (arm64), [RaspberryPi Imager](https://www.raspberrypi.org/%20downloads/)
 2. [Secure the Raspberry Pi](https://www.raspberrypi.com/documentation/computers/configuration.html#securing-your-raspberry-pi)
-3. Install Docker:
+3. Install Docker: https://docs.docker.com/engine/install/ubuntu/
    ```shell
-   $ sudo snap install docker
    # verify installation:
    $ sudo docker version
    ```
