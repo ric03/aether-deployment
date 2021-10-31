@@ -132,5 +132,5 @@ resource "docker_network" "mosquitto" {
 }
 
 resource "docker_network" "influxdb" {
-  name = "influx"
+  name = "influxdb"
 }
