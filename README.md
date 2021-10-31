@@ -39,6 +39,11 @@ Raspberry Pi 4 Model B (arm64, 8 GB RAM)
    ```shell
    # verify installation:
    $ sudo docker version
+   $ sudo docker run hello-world
+   ```
+   It may also be required to install extra modules for raspi (veth.ko missing in kernel)
+   ```shell
+   $ sudo apt install linux-modules-extra-raspi
    ```
 4. Install Terraform:  
    manual download required (terraform does not offer an arm64 package)
