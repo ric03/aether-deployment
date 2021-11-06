@@ -31,7 +31,7 @@ Grafana visualizes the data from the InfluxDB.
 
 ## Raspberry Pi Setup
 
-Raspberry Pi 4 Model B (arm64, 8 GB RAM)
+The docker-images used require a 64 bit model.
 
 1. Flash the SD-Card with Ubuntu Server (arm64), [RaspberryPi Imager](https://www.raspberrypi.org/%20downloads/)
 2. [Secure the Raspberry Pi](https://www.raspberrypi.com/documentation/computers/configuration.html#securing-your-raspberry-pi)
