@@ -1,6 +1,6 @@
-# Aether deployment
+# Project Aether Deployment
 
-This will install the following:
+This will deploy the following:
 
 - Mosquitto
 - Telegraf
@@ -30,6 +30,8 @@ Grafana visualizes the data from the InfluxDB.
    ```
 
 ## Raspberry Pi Setup
+
+![Raspberry Pi Board](docs/raspberry_pi.jpeg "Raspberry Pi Board")
 
 The docker-images used require a 64 bit model.
 
