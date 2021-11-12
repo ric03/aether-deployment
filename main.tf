@@ -122,6 +122,11 @@ resource "docker_container" "grafana" {
     host_path      = abspath("config/grafana_influxdb_datasource.yml")
     read_only      = true
   }
+  volumes {
+    container_path = "/etc/grafana/provisioning/dashboards/aether.json"
+    host_path      = abspath("config/grafana-dashboard-aether.json")
+    read_only      = true
+  }
   networks_advanced {
     name = docker_network.influxdb.name
   }
