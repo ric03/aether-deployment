@@ -119,7 +119,7 @@ resource "docker_container" "grafana" {
   }
   volumes {
     container_path = "/etc/grafana/provisioning/datasources/influxdb.yml"
-    host_path      = abspath("config/grafana_influxdb_datasource.yml")
+    host_path      = abspath("config/grafana-datasource-influxdb.yml")
     read_only      = true
   }
   volumes {
