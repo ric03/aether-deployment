@@ -10,6 +10,8 @@ This will deploy the following:
 Mosquitto acts as the MQTT-Broker. Telegraf connects to the Broker and writes the data into the InfluxDB. At the end
 Grafana visualizes the data from the InfluxDB.
 
+Also see https://github.com/ric03/aether-microcontroller
+
 ## Getting started
 
 1. Enter and encode the passwords for Mosquitto
